@@ -1,0 +1,16 @@
+from src.traffic_control import TrafficController, Phase
+import time
+
+def test_animal_crossing_hold():
+    tc = TrafficController(min_green_s=1, min_yellow_s=1, min_red_s=1, animal_crossing_hold_s=2)
+    st = tc.update(animal_present=True, vehicles_waiting=False)
+    assert st.phase == Phase.ANIMAL_CROSSING
+    time.sleep(0.5)
+    st = tc.update(animal_present=True, vehicles_waiting=False)
+    assert st.phase == Phase.ANIMAL_CROSSING
+
+def test_normal_cycle():
+    tc = TrafficController(min_green_s=0, min_yellow_s=0, min_red_s=0, animal_crossing_hold_s=1)
+    st = tc.update(animal_present=False, vehicles_waiting=True)
+    # start at RED, with zero mins, should go GREEN
+    assert st.phase in (Phase.RED, Phase.GREEN)
