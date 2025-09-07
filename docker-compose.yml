@@ -1,0 +1,15 @@
+version: "3.8"
+services:
+  mqtt:
+    image: eclipse-mosquitto:2
+    ports:
+      - "1883:1883"
+  app:
+    build: .
+    network_mode: host
+    environment:
+      - CAMERA_INDEX=0
+    depends_on:
+      - mqtt
+    devices:
+      - "/dev/video0:/dev/video0"  # Optional for Linux hosts with webcam

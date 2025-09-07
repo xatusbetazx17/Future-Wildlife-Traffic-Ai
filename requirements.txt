@@ -1,0 +1,19 @@
+# Core
+numpy>=1.26
+opencv-python>=4.9
+pyyaml>=6.0
+rich>=13.7
+
+# AI detection (optional)
+ultralytics>=8.2.0
+
+# Messaging & API
+paho-mqtt>=1.6
+fastapi>=0.110
+uvicorn>=0.27
+
+# Dashboard (optional)
+streamlit>=1.35
+
+# Tests
+pytest>=8.0
