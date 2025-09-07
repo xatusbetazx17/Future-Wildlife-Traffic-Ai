@@ -1,0 +1,26 @@
+detection:
+  # Set to a YOLO model path or leave null for default 'yolov8n.pt' (if installed).
+  model_path: null
+  confidence: 0.35
+  use_yolo: true
+  # Class names considered wildlife (best tuned per region)
+  wildlife_labels: ["deer", "bear", "moose", "fox", "coyote", "boar", "elk", "wolf"]
+  video_source: 0  # 0 = default webcam; or a path to a video file
+
+traffic:
+  min_green_s: 8
+  min_yellow_s: 3
+  min_red_s: 6
+  animal_crossing_hold_s: 15
+  emergency_priority: true
+
+comms:
+  mqtt_host: "localhost"
+  mqtt_port: 1883
+  mqtt_topic_events: "wildlife/events"
+  udp_broadcast_port: 37020
+
+behavior:
+  enable_udp_broadcast: true
+  enable_mqtt: false
+  draw_debug: true
