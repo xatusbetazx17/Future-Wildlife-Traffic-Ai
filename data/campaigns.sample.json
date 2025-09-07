@@ -1,0 +1,19 @@
+[
+  {
+    "id": "nj-rte80-2025Q4",
+    "name": "NJ Wildlife Health Pilot Corridor",
+    "pathogen": "rabies",
+    "target_species": [
+      "raccoon",
+      "fox"
+    ],
+    "start_date": "2025-11-01",
+    "end_date": "2025-12-15",
+    "region_label": "I-80 Sussex/Warren test segment",
+    "approvals_received": false,
+    "target_population_estimate": 5000,
+    "target_coverage_rate": 0.6,
+    "buffer_overage_rate": 0.1,
+    "notes": "Placeholder record for agency discussion only. No field ops."
+  }
+]
