@@ -1,0 +1,25 @@
+schema_version: 1
+mode: shadow
+database_path: ../var/multisite.sqlite3
+sites:
+  - id: forest
+    name: Synthetic forest corridor
+    latitude: 40.987
+    longitude: -74.789
+    timezone: America/New_York
+    species: [deer, bear]
+    sensors:
+      - id: north
+        allowed_conditions: [dry, rain]
+      - id: south
+        allowed_conditions: [dry, rain]
+  - id: migration
+    name: Synthetic migration corridor
+    latitude: 43.5
+    longitude: -110.8
+    timezone: America/Denver
+    species: [elk, moose]
+    active_months: [4, 5, 9, 10]
+    sensors:
+      - id: thermal
+        allowed_conditions: [dry]

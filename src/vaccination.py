@@ -1,10 +1,12 @@
-from dataclasses import dataclass, field, asdict
-from typing import Optional, List, Dict
+from dataclasses import asdict, dataclass
 from datetime import date
+from typing import Dict, List, Optional
+
 
 @dataclass
 class VaccinationCampaign:
     """Agency-only planning record. No field procedures provided."""
+
     id: str
     name: str
     pathogen: str
@@ -32,7 +34,10 @@ class VaccinationCampaign:
         d["expected_dose_count"] = self.expected_dose_count()
         return d
 
-def calc_expected_doses(population_estimate: int, coverage_rate: float, buffer_overage_rate: float = 0.10) -> int:
+
+def calc_expected_doses(
+    population_estimate: int, coverage_rate: float, buffer_overage_rate: float = 0.10
+) -> int:
     base = int(round(max(0, population_estimate) * max(0.0, min(1.0, coverage_rate))))
     buffer = int(round(base * max(0.0, buffer_overage_rate)))
     return base + buffer

@@ -1,0 +1,73 @@
+{
+  "evidence": "synthetic software simulation only",
+  "physical_control": false,
+  "observations": 50,
+  "timeline": [
+    {
+      "elapsed_s": 0.5,
+      "phase": "RED",
+      "advisory": "no_recent_detection"
+    },
+    {
+      "elapsed_s": 1.5,
+      "phase": "GREEN",
+      "advisory": "no_recent_detection"
+    },
+    {
+      "elapsed_s": 6.0,
+      "phase": "YELLOW",
+      "advisory": "wildlife_detected"
+    },
+    {
+      "elapsed_s": 7.0,
+      "phase": "RED",
+      "advisory": "wildlife_detected"
+    },
+    {
+      "elapsed_s": 8.0,
+      "phase": "ANIMAL_CROSSING",
+      "advisory": "wildlife_detected"
+    },
+    {
+      "elapsed_s": 11.5,
+      "phase": "ANIMAL_CROSSING",
+      "advisory": "no_recent_detection"
+    },
+    {
+      "elapsed_s": 12.5,
+      "phase": "RED",
+      "advisory": "no_recent_detection"
+    },
+    {
+      "elapsed_s": 13.5,
+      "phase": "GREEN",
+      "advisory": "no_recent_detection"
+    },
+    {
+      "elapsed_s": 17.5,
+      "phase": "YELLOW",
+      "advisory": "monitoring_unavailable"
+    },
+    {
+      "elapsed_s": 18.5,
+      "phase": "RED",
+      "advisory": "monitoring_unavailable"
+    },
+    {
+      "elapsed_s": 19.5,
+      "phase": "FAULT",
+      "advisory": "monitoring_unavailable"
+    },
+    {
+      "elapsed_s": 20.5,
+      "phase": "RED",
+      "advisory": "no_recent_detection"
+    },
+    {
+      "elapsed_s": 21.5,
+      "phase": "GREEN",
+      "advisory": "no_recent_detection"
+    }
+  ],
+  "final_monitoring_healthy": true
+}

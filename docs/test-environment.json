@@ -1,0 +1,23 @@
+{
+  "scope": "Local software validation; no field trial",
+  "python": "3.12.14",
+  "platform": "Linux x86_64",
+  "test_result": {
+    "tests": 88,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "packages": {
+    "fastapi": "0.141.1",
+    "pydantic": "2.13.5",
+    "uvicorn": "0.52.4",
+    "PyYAML": "6.0.3",
+    "pytest": "9.1.1",
+    "httpx": "0.28.1",
+    "ruff": "0.16.6",
+    "paho-mqtt": "2.1.0",
+    "opencv-python-headless": "4.14.0.94",
+    "numpy": "2.5.3"
+  }
+}

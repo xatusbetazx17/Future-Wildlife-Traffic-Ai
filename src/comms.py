@@ -1,37 +1,83 @@
+"""Optional MQTT 5 transport. JSON advisories are not standardized V2X messages."""
+
 import json
-import socket
-from typing import Dict, Any, Optional
+import math
+import os
+import threading
+from datetime import datetime
 
-try:
-    import paho.mqtt.client as mqtt
-    _HAS_MQTT = True
-except Exception:
-    _HAS_MQTT = False
 
-class Broadcaster:
-    def __init__(self, mqtt_host: str, mqtt_port: int, topic: str, udp_port: int, enable_mqtt: bool, enable_udp: bool):
-        self.enable_mqtt = enable_mqtt and _HAS_MQTT
-        self.enable_udp = enable_udp
-        self.topic = topic
-        self.udp_port = udp_port
-        self.sock = None
-        self.client = None
+class MqttPublisher:
+    def __init__(self, config):
+        import paho.mqtt.client as mqtt
 
-        if self.enable_udp:
-            self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-            self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+        self.mqtt = mqtt
+        self.config = config
+        self.client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2, protocol=mqtt.MQTTv5)
+        self.client.max_queued_messages_set(100)
+        self.client.max_inflight_messages_set(10)
+        self.client.reconnect_delay_set(min_delay=1, max_delay=30)
+        if config.ca_file:
+            self.client.tls_set(ca_certs=config.ca_file, certfile=config.cert_file, keyfile=config.key_file)
+        if config.username_env:
+            user, password = os.environ.get(config.username_env), os.environ.get(config.password_env)
+            if not user or not password:
+                raise ValueError("configured MQTT credential environment variables are missing")
+            self.client.username_pw_set(user, password)
+        self.client.connect_async(config.host, config.port, keepalive=30)
+        self.client.loop_start()
 
-        if self.enable_mqtt:
-            self.client = mqtt.Client()
+    def publish(self, event, now):
+        if not self.client.is_connected():
+            return False
+        ttl = math.floor(datetime.fromisoformat(event["expires_at"]).timestamp() - now)
+        if ttl <= 0:
+            return False
+        props = self.mqtt.Properties(self.mqtt.PacketTypes.PUBLISH)
+        props.MessageExpiryInterval = ttl
+        info = self.client.publish(
+            self.config.topic_prefix + "/" + event["site_id"],
+            json.dumps(event, allow_nan=False),
+            qos=1,
+            retain=False,
+            properties=props,
+        )
+        if info.rc != self.mqtt.MQTT_ERR_SUCCESS:
+            return False
+        info.wait_for_publish(timeout=2)
+        return info.is_published()
+
+    def close(self):
+        self.client.disconnect()
+        self.client.loop_stop()
+
+
+class OutboxWorker:
+    def __init__(self, runtime, publisher):
+        self.runtime, self.publisher = runtime, publisher
+        self.stop = threading.Event()
+        self.last_error = None
+        self.thread = threading.Thread(target=self.run, name="wildlife-outbox", daemon=True)
+
+    def run(self):
+        while not self.stop.is_set():
             try:
-                self.client.connect(mqtt_host, mqtt_port, 60)
-            except Exception:
-                self.client = None
-                self.enable_mqtt = False
+                events = self.runtime.store.events(self.runtime.wall(), limit=20, pending=True)
+                for event in events:
+                    if self.stop.is_set():
+                        break
+                    if self.publisher.publish(event, self.runtime.wall()):
+                        self.runtime.store.delivered(event["event_id"])
+                    else:
+                        break
+                self.last_error = None
+            except Exception as exc:
+                # Do not expose broker URLs, credentials or remote payloads.
+                self.last_error = type(exc).__name__
+            self.stop.wait(0.5)
 
-    def publish(self, event: Dict[str, Any]):
-        payload = json.dumps(event).encode("utf-8")
-        if self.enable_udp and self.sock:
-            self.sock.sendto(payload, ("255.255.255.255", self.udp_port))
-        if self.enable_mqtt and self.client:
-            self.client.publish(self.topic, payload)
+    def close(self):
+        self.stop.set()
+        if self.thread.is_alive():
+            self.thread.join(timeout=4)
+        self.publisher.close()

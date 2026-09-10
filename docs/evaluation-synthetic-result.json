@@ -1,0 +1,106 @@
+{
+  "schema_version": 1,
+  "provenance": "synthetic",
+  "description": "Tiny illustrative dataset; not a measured field result.",
+  "metrics": {
+    "windows": 4,
+    "true_positive": 1,
+    "false_negative": 1,
+    "false_positive": 1,
+    "true_negative": 1,
+    "precision": 0.5,
+    "recall": 0.5,
+    "recall_wilson_95": [
+      0.09453120573423074,
+      0.9054687942657693
+    ],
+    "false_positive_rate": 0.5,
+    "false_warning_windows_per_hour": 15.0,
+    "latency_samples": 1,
+    "latency_p95_ms": 220.0
+  },
+  "by_species": {
+    "deer": {
+      "windows": 2,
+      "true_positive": 1,
+      "false_negative": 1,
+      "false_positive": 0,
+      "true_negative": 0,
+      "precision": 1.0,
+      "recall": 0.5,
+      "recall_wilson_95": [
+        0.09453120573423074,
+        0.9054687942657693
+      ],
+      "false_positive_rate": null,
+      "false_warning_windows_per_hour": 0.0,
+      "latency_samples": 1,
+      "latency_p95_ms": 220.0
+    },
+    "none": {
+      "windows": 2,
+      "true_positive": 0,
+      "false_negative": 0,
+      "false_positive": 1,
+      "true_negative": 1,
+      "precision": 0.0,
+      "recall": null,
+      "recall_wilson_95": null,
+      "false_positive_rate": 0.5,
+      "false_warning_windows_per_hour": 30.0,
+      "latency_samples": 0,
+      "latency_p95_ms": null
+    }
+  },
+  "by_condition": {
+    "dry-day": {
+      "windows": 2,
+      "true_positive": 1,
+      "false_negative": 0,
+      "false_positive": 0,
+      "true_negative": 1,
+      "precision": 1.0,
+      "recall": 1.0,
+      "recall_wilson_95": [
+        0.20654931437723745,
+        1
+      ],
+      "false_positive_rate": 0.0,
+      "false_warning_windows_per_hour": 0.0,
+      "latency_samples": 1,
+      "latency_p95_ms": 220.0
+    },
+    "dry-night": {
+      "windows": 1,
+      "true_positive": 0,
+      "false_negative": 1,
+      "false_positive": 0,
+      "true_negative": 0,
+      "precision": null,
+      "recall": 0.0,
+      "recall_wilson_95": [
+        0,
+        0.7934506856227626
+      ],
+      "false_positive_rate": null,
+      "false_warning_windows_per_hour": 0.0,
+      "latency_samples": 0,
+      "latency_p95_ms": null
+    },
+    "rain": {
+      "windows": 1,
+      "true_positive": 0,
+      "false_negative": 0,
+      "false_positive": 1,
+      "true_negative": 0,
+      "precision": 0.0,
+      "recall": null,
+      "recall_wilson_95": null,
+      "false_positive_rate": 1.0,
+      "false_warning_windows_per_hour": 60.0,
+      "latency_samples": 0,
+      "latency_p95_ms": null
+    }
+  },
+  "limitations": "Nonoverlapping labeled windows are required. This is not an object-detection mAP evaluation or evidence of collision reduction. Correlated samples weaken the interval interpretation."
+}

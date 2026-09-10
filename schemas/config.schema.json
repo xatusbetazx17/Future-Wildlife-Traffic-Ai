@@ -1,0 +1,483 @@
+{
+  "$defs": {
+    "MqttConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "default": false,
+          "title": "Enabled",
+          "type": "boolean"
+        },
+        "host": {
+          "default": "localhost",
+          "title": "Host",
+          "type": "string"
+        },
+        "port": {
+          "default": 8883,
+          "maximum": 65535,
+          "minimum": 1,
+          "title": "Port",
+          "type": "integer"
+        },
+        "topic_prefix": {
+          "default": "wildlife/v1",
+          "pattern": "^[a-zA-Z0-9/_-]{1,100}$",
+          "title": "Topic Prefix",
+          "type": "string"
+        },
+        "ca_file": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ca File"
+        },
+        "cert_file": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Cert File"
+        },
+        "key_file": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Key File"
+        },
+        "username_env": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Username Env"
+        },
+        "password_env": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Password Env"
+        },
+        "allow_insecure_localhost": {
+          "default": false,
+          "title": "Allow Insecure Localhost",
+          "type": "boolean"
+        }
+      },
+      "title": "MqttConfig",
+      "type": "object"
+    },
+    "SensorConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_-]{0,63}$",
+          "title": "Id",
+          "type": "string"
+        },
+        "kind": {
+          "default": "external",
+          "enum": [
+            "external",
+            "camera",
+            "video"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "required": {
+          "default": true,
+          "title": "Required",
+          "type": "boolean"
+        },
+        "source": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source"
+        },
+        "detector": {
+          "default": "yolo",
+          "enum": [
+            "yolo",
+            "motion"
+          ],
+          "title": "Detector",
+          "type": "string"
+        },
+        "model_path": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Model Path"
+        },
+        "model_sha256": {
+          "anyOf": [
+            {
+              "pattern": "^[a-f0-9]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Model Sha256"
+        },
+        "roi": {
+          "items": {
+            "items": {
+              "ge": 0,
+              "le": 1,
+              "type": "number"
+            },
+            "type": "array"
+          },
+          "maxItems": 64,
+          "minItems": 3,
+          "title": "Roi",
+          "type": "array"
+        },
+        "max_age_s": {
+          "default": 3,
+          "gt": 0,
+          "title": "Max Age S",
+          "type": "number"
+        },
+        "max_fps": {
+          "default": 5,
+          "gt": 0,
+          "le": 60,
+          "title": "Max Fps",
+          "type": "number"
+        },
+        "allowed_conditions": {
+          "items": {
+            "enum": [
+              "dry",
+              "rain",
+              "snow",
+              "fog",
+              "unknown"
+            ],
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Allowed Conditions",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "title": "SensorConfig",
+      "type": "object"
+    },
+    "SiteConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_-]{0,63}$",
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "maxLength": 120,
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "latitude": {
+          "ge": -90,
+          "le": 90,
+          "title": "Latitude",
+          "type": "number"
+        },
+        "longitude": {
+          "ge": -180,
+          "le": 180,
+          "title": "Longitude",
+          "type": "number"
+        },
+        "timezone": {
+          "default": "UTC",
+          "title": "Timezone",
+          "type": "string"
+        },
+        "radius_m": {
+          "default": 500,
+          "gt": 0,
+          "le": 100000,
+          "title": "Radius M",
+          "type": "number"
+        },
+        "species": {
+          "items": {
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_-]{0,63}$",
+            "type": "string"
+          },
+          "maxItems": 100,
+          "minItems": 1,
+          "title": "Species",
+          "type": "array"
+        },
+        "confidence": {
+          "default": 0.7,
+          "gt": 0,
+          "le": 1,
+          "title": "Confidence",
+          "type": "number"
+        },
+        "confirm_frames": {
+          "default": 3,
+          "maximum": 100,
+          "minimum": 1,
+          "title": "Confirm Frames",
+          "type": "integer"
+        },
+        "confirm_window_s": {
+          "default": 2,
+          "gt": 0,
+          "title": "Confirm Window S",
+          "type": "number"
+        },
+        "event_ttl_s": {
+          "default": 30,
+          "ge": 2,
+          "le": 3600,
+          "title": "Event Ttl S",
+          "type": "number"
+        },
+        "base_risk": {
+          "default": 20,
+          "ge": 0,
+          "le": 60,
+          "title": "Base Risk",
+          "type": "number"
+        },
+        "active_months": {
+          "items": {
+            "maximum": 12,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "title": "Active Months",
+          "type": "array"
+        },
+        "high_risk_hours": {
+          "items": {
+            "maximum": 23,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "title": "High Risk Hours",
+          "type": "array"
+        },
+        "advisory_speed_kph": {
+          "anyOf": [
+            {
+              "gt": 0,
+              "le": 130,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Advisory Speed Kph"
+        },
+        "traffic": {
+          "$ref": "#/$defs/TrafficConfig"
+        },
+        "sensors": {
+          "items": {
+            "$ref": "#/$defs/SensorConfig"
+          },
+          "maxItems": 32,
+          "minItems": 1,
+          "title": "Sensors",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "latitude",
+        "longitude",
+        "sensors"
+      ],
+      "title": "SiteConfig",
+      "type": "object"
+    },
+    "TrafficConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "min_green_s": {
+          "default": 8,
+          "gt": 0,
+          "title": "Min Green S",
+          "type": "number"
+        },
+        "min_yellow_s": {
+          "default": 3,
+          "gt": 0,
+          "title": "Min Yellow S",
+          "type": "number"
+        },
+        "min_red_s": {
+          "default": 6,
+          "gt": 0,
+          "title": "Min Red S",
+          "type": "number"
+        },
+        "animal_crossing_hold_s": {
+          "default": 15,
+          "gt": 0,
+          "title": "Animal Crossing Hold S",
+          "type": "number"
+        },
+        "clear_s": {
+          "default": 5,
+          "gt": 0,
+          "title": "Clear S",
+          "type": "number"
+        },
+        "max_crossing_s": {
+          "default": 120,
+          "gt": 0,
+          "title": "Max Crossing S",
+          "type": "number"
+        }
+      },
+      "title": "TrafficConfig",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "mode": {
+      "default": "shadow",
+      "enum": [
+        "simulation",
+        "shadow"
+      ],
+      "title": "Mode",
+      "type": "string"
+    },
+    "database_path": {
+      "default": "var/wildlife.sqlite3",
+      "title": "Database Path",
+      "type": "string"
+    },
+    "api_key_env": {
+      "default": "WILDLIFE_API_KEY",
+      "title": "Api Key Env",
+      "type": "string"
+    },
+    "admin_key_env": {
+      "default": "WILDLIFE_ADMIN_KEY",
+      "title": "Admin Key Env",
+      "type": "string"
+    },
+    "sensor_keys_env": {
+      "default": "WILDLIFE_SENSOR_KEYS",
+      "title": "Sensor Keys Env",
+      "type": "string"
+    },
+    "tick_s": {
+      "default": 0.25,
+      "gt": 0,
+      "le": 1,
+      "title": "Tick S",
+      "type": "number"
+    },
+    "retention_days": {
+      "default": 7,
+      "maximum": 365,
+      "minimum": 1,
+      "title": "Retention Days",
+      "type": "integer"
+    },
+    "max_observations": {
+      "default": 100000,
+      "maximum": 10000000,
+      "minimum": 100,
+      "title": "Max Observations",
+      "type": "integer"
+    },
+    "max_events": {
+      "default": 100000,
+      "maximum": 10000000,
+      "minimum": 100,
+      "title": "Max Events",
+      "type": "integer"
+    },
+    "sites": {
+      "items": {
+        "$ref": "#/$defs/SiteConfig"
+      },
+      "maxItems": 100,
+      "minItems": 1,
+      "title": "Sites",
+      "type": "array"
+    },
+    "mqtt": {
+      "$ref": "#/$defs/MqttConfig"
+    }
+  },
+  "required": [
+    "sites"
+  ],
+  "title": "AppConfig",
+  "type": "object"
+}

@@ -1,0 +1,109 @@
+{
+  "$defs": {
+    "Detection": {
+      "additionalProperties": false,
+      "properties": {
+        "label": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_-]{0,63}$",
+          "title": "Label",
+          "type": "string"
+        },
+        "confidence": {
+          "ge": 0,
+          "le": 1,
+          "title": "Confidence",
+          "type": "number"
+        },
+        "bbox": {
+          "items": {
+            "ge": 0,
+            "le": 1,
+            "type": "number"
+          },
+          "maxItems": 4,
+          "minItems": 4,
+          "title": "Bbox",
+          "type": "array"
+        },
+        "evidence": {
+          "default": "classified",
+          "enum": [
+            "classified",
+            "motion"
+          ],
+          "title": "Evidence",
+          "type": "string"
+        }
+      },
+      "required": [
+        "label",
+        "confidence",
+        "bbox"
+      ],
+      "title": "Detection",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "observation_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_-]{0,63}$",
+      "title": "Observation Id",
+      "type": "string"
+    },
+    "site_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_-]{0,63}$",
+      "title": "Site Id",
+      "type": "string"
+    },
+    "sensor_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_-]{0,63}$",
+      "title": "Sensor Id",
+      "type": "string"
+    },
+    "observed_at": {
+      "format": "date-time",
+      "title": "Observed At",
+      "type": "string"
+    },
+    "healthy": {
+      "default": true,
+      "title": "Healthy",
+      "type": "boolean"
+    },
+    "conditions": {
+      "default": "unknown",
+      "enum": [
+        "dry",
+        "rain",
+        "snow",
+        "fog",
+        "unknown"
+      ],
+      "title": "Conditions",
+      "type": "string"
+    },
+    "detections": {
+      "items": {
+        "$ref": "#/$defs/Detection"
+      },
+      "maxItems": 100,
+      "title": "Detections",
+      "type": "array"
+    }
+  },
+  "required": [
+    "observation_id",
+    "site_id",
+    "sensor_id",
+    "observed_at"
+  ],
+  "title": "Observation",
+  "type": "object"
+}

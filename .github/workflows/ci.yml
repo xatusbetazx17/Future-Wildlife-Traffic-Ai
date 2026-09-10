@@ -1,0 +1,45 @@
+name: Software validation
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ["3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - run: python -m pip install -e ".[test,mqtt]" opencv-python-headless
+      - run: python -m ruff check src tests examples
+      - run: python -m ruff format --check src tests examples
+      - run: python -m pytest -q
+      - run: python -m src.main --config configs/pilot.yaml validate
+      - run: python -m src.main --config configs/multisite.yaml validate
+      - run: python -m src.main demo
+      - run: python -m src.evaluation examples/evaluation.synthetic.json
+      - run: python -m build
+  container:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -t wildlife-pilot .
+      - name: Test unprivileged container health
+        shell: bash
+        run: |
+          export WILDLIFE_API_KEY=$(python -c 'import secrets; print(secrets.token_urlsafe(32))')
+          docker run -d --name wildlife-ci -p 127.0.0.1:8000:8000 -e WILDLIFE_API_KEY wildlife-pilot
+          trap 'docker rm -f wildlife-ci' EXIT
+          for attempt in {1..20}; do
+            if curl --fail --silent http://127.0.0.1:8000/healthz; then
+              exit 0
+            fi
+            sleep 1
+          done
+          docker logs wildlife-ci
+          exit 1

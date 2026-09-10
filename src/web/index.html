@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Wildlife Watch • Pilot Console</title>
+<style>
+:root{color-scheme:dark;--bg:#101a18;--panel:#192823;--line:#31443a;--ink:#ecf3df;--muted:#aabdad;--mint:#bbdf91;--amber:#f2c371}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px system-ui,sans-serif}
+main{max-width:1200px;margin:auto;padding:32px}header{display:flex;justify-content:space-between;align-items:center;gap:20px;border-bottom:1px solid var(--line);padding-bottom:24px}
+h1{font-size:34px;letter-spacing:-1px;margin:8px 0}h2{font-size:22px}p{line-height:1.5;color:var(--muted)}
+.eyebrow{font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--mint)}.pill{padding:9px 14px;background:#2d3e2e;border-radius:24px;font-size:12px;white-space:nowrap}
+form{display:flex;gap:10px;flex-wrap:wrap;margin:24px 0}input,button{font:inherit;border-radius:8px;border:1px solid var(--line);padding:12px}input{background:#15211c;color:var(--ink);min-width:250px;flex:1}button{background:var(--mint);color:#132218;cursor:pointer;font-weight:600}
+.notice{background:#26372d;padding:14px 18px;border-radius:8px;border:1px solid var(--line)}
+#connection{color:var(--amber);min-height:24px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px}
+.card{padding:24px;background:var(--panel);border:1px solid var(--line);border-radius:14px}.card h2{margin:8px 0}.status{font-size:23px;color:var(--amber);margin:20px 0}.good{color:var(--mint)}.small{font-size:13px;color:var(--muted)}
+.row{display:flex;justify-content:space-between;gap:12px;border-top:1px solid var(--line);padding:12px 0}.sensor{font-size:14px}
+table{width:100%;border-collapse:collapse;font-size:14px}th,td{text-align:left;padding:14px;border-bottom:1px solid var(--line)}th{color:var(--muted);font-weight:400}
+.feed{overflow:auto;border:1px solid var(--line);border-radius:12px}footer{margin-top:32px;color:var(--muted);font-size:13px}.stale{opacity:.5}
+@media(max-width:600px){main{padding:20px}header{align-items:flex-start;flex-direction:column}h1{font-size:29px}input{min-width:180px}}
+</style></head><body><main>
+<header><div><div class="eyebrow">Future Wildlife Traffic AI</div><h1>Wildlife Watch</h1><p>A clear view of corridor monitoring.</p></div><span class="pill">SHADOW PILOT • NO PHYSICAL CONTROL</span></header>
+<p class="notice">Signals shown here are simulated. Missing or expired observations mean coverage is unknown. No recent detection does not establish a clear road.</p>
+<form id="connect"><label class="small" for="key">Read token</label><input id="key" type="password" autocomplete="off" placeholder="Enter your read API token" required><button>Connect</button><button id="disconnect" type="button">Disconnect</button></form>
+<p id="connection" role="status" aria-live="polite">Connect to view current observations. The token stays in this page's memory.</p>
+<section id="sites" class="grid" aria-label="Monitored corridors"></section>
+<h2>Recent advisories</h2><p class="small">Latest unexpired messages. This is an advisory feed, not a signal command feed.</p>
+<div class="feed"><table><thead><tr><th>Issued</th><th>Corridor</th><th>Advisory</th><th>Valid until</th></tr></thead><tbody id="events"></tbody></table></div>
+<footer>Operator holds use a separate credential through the API. <a href="/docs" style="color:var(--mint)">Integration API</a> · Version 0.2</footer>
+</main><script>
+let token='',timer=null,generation=0;
+const $=id=>document.getElementById(id);
+const names={wildlife_detected:'Wildlife detected',monitoring_unavailable:'Coverage unknown',operator_hold:'Operator hold',no_recent_detection:'No recent detection'};
+function element(tag,text,cls){const el=document.createElement(tag);el.textContent=text;if(cls)el.className=cls;return el}
+function row(label,value){const el=element('div','','row');el.append(element('span',label,'small'),element('span',value));return el}
+async function get(path){const res=await fetch(path,{headers:{Authorization:'Bearer '+token},cache:'no-store',signal:AbortSignal.timeout(4000)});if(!res.ok)throw Error(res.status===401||res.status===403?'Token not accepted.':'Service unavailable ('+res.status+').');return res.json()}
+async function poll(current){
+try{
+const [status,feed]=await Promise.all([get('/status'),get('/events?limit=1000')]);if(current!==generation)return;
+$('sites').classList.remove('stale');$('sites').replaceChildren();
+for(const site of status.sites){
+const card=element('article','','card');card.append(element('div',site.site_id,'eyebrow'),element('h2',site.name),element('div',names[site.advisory]||site.advisory,'status '+(site.monitoring_healthy?'good':'')));
+card.append(row('Monitoring',site.monitoring_healthy?'Receiving data':'Unavailable'),row('Simulated phase',site.phase),row('Species',site.species.join(', ')||'None confirmed'));
+for(const [id,sensor] of Object.entries(site.sensors)){card.append(element('p',id+' · '+(sensor.healthy?'Receiving':'Check sensor')+' · '+(sensor.age_s===null?'No observations':sensor.age_s.toFixed(1)+' s old'),'sensor'))}
+if(site.occupancy_overdue)card.append(element('p','Prolonged occupancy: operator review needed.','notice'));
+$('sites').append(card)}
+$('events').replaceChildren();
+for(const ev of feed.events.slice(-20).reverse()){const tr=document.createElement('tr');for(const text of [new Date(ev.issued_at).toLocaleTimeString(),ev.site_id,names[ev.type]||ev.type,new Date(ev.expires_at).toLocaleTimeString()])tr.append(element('td',text));$('events').append(tr)}
+$('connection').textContent='Connected · Updated '+new Date().toLocaleTimeString()+' · '+status.sites.length+' corridor(s)';
+}catch(error){if(current!==generation)return;$('connection').textContent=error.message+' Displayed data is stale.';$('sites').classList.add('stale')}
+if(current===generation&&token)timer=setTimeout(()=>poll(current),1500);
+}
+$('connect').addEventListener('submit',ev=>{ev.preventDefault();clearTimeout(timer);token=$('key').value;$('key').value='';poll(++generation)});
+$('disconnect').addEventListener('click',()=>{generation++;clearTimeout(timer);token='';$('sites').replaceChildren();$('events').replaceChildren();$('connection').textContent='Disconnected.'});
+</script></body></html>

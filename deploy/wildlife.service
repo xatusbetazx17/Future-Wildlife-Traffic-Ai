@@ -1,0 +1,23 @@
+[Unit]
+Description=Wildlife shadow pilot
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=wildlife
+Group=wildlife
+WorkingDirectory=/opt/wildlife
+EnvironmentFile=/etc/wildlife/secrets.env
+ExecStart=/opt/wildlife/.venv/bin/python -m src.main --config /etc/wildlife/pilot.yaml serve --host 127.0.0.1
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/wildlife
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,7 @@
+include LICENSE README.md ROADMAP.md SECURITY.md requirements.txt
+recursive-include configs *.yaml
+recursive-include data *.yaml *.json
+recursive-include docs *.md *.json *.txt
+recursive-include schemas *.json
+recursive-include examples *.py *.json
+recursive-include tests *.py
