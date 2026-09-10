@@ -1,0 +1,19 @@
+schema_version: 1
+mode: shadow
+database_path: ../var/camera.sqlite3
+sites:
+  - id: lab-camera
+    name: Camera bench - replace model, hash and coverage
+    latitude: 0
+    longitude: 0
+    species: [deer]
+    sensors:
+      - id: camera-1
+        kind: camera
+        source: 0
+        detector: yolo
+        model_path: ../models/wildlife.pt
+        # Replace with sha256sum of an independently trusted local model.
+        model_sha256: "0000000000000000000000000000000000000000000000000000000000000000"
+        # Camera alone does not measure weather. 'unknown' is for a supervised bench.
+        allowed_conditions: [unknown]

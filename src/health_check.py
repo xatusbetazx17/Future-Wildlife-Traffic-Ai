@@ -1,27 +1,26 @@
-from dataclasses import dataclass
-from typing import Optional, Dict
-import random
-import time
+"""Optional research metadata. No disease inference or fabricated measurements."""
 
-@dataclass
+import math
+from dataclasses import dataclass
+
+
+@dataclass(frozen=True)
 class HealthReport:
-    temperature_c: float
-    fever_flag: bool
-    notes: str = ""
+    surface_temperature_c: float | None
+    source: str
+    diagnostic: bool = False
+    notes: str = "Surface temperature alone cannot diagnose fever, infection or zoonotic risk."
+
 
 class HealthChecker:
-    """Simulated non-invasive health checker.
-    Replace with real sensors (IR thermography, etc.) in deployment."""
-    def __init__(self, normal_temp_range=(36.0, 39.5)):
-        self.normal_temp_range = normal_temp_range
-
-    def check(self, species: Optional[str] = None) -> HealthReport:
-        base_min, base_max = self.normal_temp_range
-        # Adjust slightly by species (toy example)
-        if species in {"deer","elk"}:
-            base_max += 0.3
-
-        temp = random.uniform(base_min - 0.7, base_max + 0.7)
-        fever = temp > base_max
-        notes = "Simulated reading; non-diagnostic."
-        return HealthReport(temperature_c=round(temp,2), fever_flag=fever, notes=notes)
+    def check(self, *, surface_temperature_c=None, source="not_measured"):
+        if surface_temperature_c is None:
+            return HealthReport(None, "not_measured")
+        if (
+            isinstance(surface_temperature_c, bool)
+            or not math.isfinite(surface_temperature_c)
+            or not -100 <= surface_temperature_c <= 150
+            or source == "not_measured"
+        ):
+            raise ValueError("a finite sensor measurement and explicit source are required")
+        return HealthReport(float(surface_temperature_c), source)

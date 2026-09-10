@@ -1,15 +1,22 @@
-version: "3.8"
 services:
-  mqtt:
-    image: eclipse-mosquitto:2
-    ports:
-      - "1883:1883"
   app:
     build: .
-    network_mode: host
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8000:8000"
     environment:
-      - CAMERA_INDEX=0
-    depends_on:
-      - mqtt
-    devices:
-      - "/dev/video0:/dev/video0"  # Optional for Linux hosts with webcam
+      WILDLIFE_API_KEY: ${WILDLIFE_API_KEY:?Set a random read token of at least 32 characters}
+      WILDLIFE_ADMIN_KEY: ${WILDLIFE_ADMIN_KEY:-}
+      WILDLIFE_SENSOR_KEYS: ${WILDLIFE_SENSOR_KEYS:-}
+    volumes:
+      - wildlife-data:/app/var
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+    mem_limit: 512m
+    pids_limit: 128
+volumes:
+  wildlife-data:

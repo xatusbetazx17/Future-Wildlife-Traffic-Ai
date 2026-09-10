@@ -1,0 +1,153 @@
+{
+  "$defs": {
+    "Location": {
+      "additionalProperties": false,
+      "properties": {
+        "latitude": {
+          "ge": -90,
+          "le": 90,
+          "title": "Latitude",
+          "type": "number"
+        },
+        "longitude": {
+          "ge": -180,
+          "le": 180,
+          "title": "Longitude",
+          "type": "number"
+        },
+        "radius_m": {
+          "gt": 0,
+          "title": "Radius M",
+          "type": "number"
+        }
+      },
+      "required": [
+        "latitude",
+        "longitude",
+        "radius_m"
+      ],
+      "title": "Location",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "event_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_-]{0,63}$",
+      "title": "Event Id",
+      "type": "string"
+    },
+    "site_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_-]{0,63}$",
+      "title": "Site Id",
+      "type": "string"
+    },
+    "issued_at": {
+      "format": "date-time",
+      "title": "Issued At",
+      "type": "string"
+    },
+    "expires_at": {
+      "format": "date-time",
+      "title": "Expires At",
+      "type": "string"
+    },
+    "type": {
+      "enum": [
+        "wildlife_detected",
+        "monitoring_unavailable",
+        "operator_hold",
+        "no_recent_detection"
+      ],
+      "title": "Type",
+      "type": "string"
+    },
+    "species": {
+      "items": {
+        "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_-]{0,63}$",
+        "type": "string"
+      },
+      "title": "Species",
+      "type": "array"
+    },
+    "monitoring_healthy": {
+      "title": "Monitoring Healthy",
+      "type": "boolean"
+    },
+    "phase": {
+      "enum": [
+        "RED",
+        "GREEN",
+        "YELLOW",
+        "ANIMAL_CROSSING",
+        "FAULT"
+      ],
+      "title": "Phase",
+      "type": "string"
+    },
+    "phase_is_simulated": {
+      "const": true,
+      "default": true,
+      "title": "Phase Is Simulated",
+      "type": "boolean"
+    },
+    "mode": {
+      "enum": [
+        "simulation",
+        "shadow"
+      ],
+      "title": "Mode",
+      "type": "string"
+    },
+    "physical_control": {
+      "const": false,
+      "default": false,
+      "title": "Physical Control",
+      "type": "boolean"
+    },
+    "location": {
+      "$ref": "#/$defs/Location"
+    },
+    "advisory_speed_kph": {
+      "anyOf": [
+        {
+          "gt": 0,
+          "le": 130,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Advisory Speed Kph"
+    },
+    "message": {
+      "maxLength": 500,
+      "minLength": 1,
+      "title": "Message",
+      "type": "string"
+    }
+  },
+  "required": [
+    "event_id",
+    "site_id",
+    "issued_at",
+    "expires_at",
+    "type",
+    "species",
+    "monitoring_healthy",
+    "phase",
+    "mode",
+    "location",
+    "advisory_speed_kph",
+    "message"
+  ],
+  "title": "Event",
+  "type": "object"
+}

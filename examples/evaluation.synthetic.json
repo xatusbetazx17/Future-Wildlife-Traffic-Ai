@@ -1,0 +1,11 @@
+{
+  "schema_version":1,
+  "provenance":"synthetic",
+  "description":"Tiny illustrative dataset; not a measured field result.",
+  "windows":[
+    {"id":"day-1","species":"deer","condition":"dry-day","animal_present":true,"warned":true,"duration_s":60,"warning_latency_ms":220},
+    {"id":"night-1","species":"deer","condition":"dry-night","animal_present":true,"warned":false,"duration_s":60},
+    {"id":"empty-1","species":"none","condition":"dry-day","animal_present":false,"warned":false,"duration_s":60},
+    {"id":"motion-1","species":"none","condition":"rain","animal_present":false,"warned":true,"duration_s":60}
+  ]
+}

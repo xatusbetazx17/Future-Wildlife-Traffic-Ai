@@ -1,55 +1,42 @@
-# ROADMAP — Wildlife-Friendly Smart Traffic System
+# Implementation status and remaining work
 
-This roadmap organizes work into deliverable phases so transportation + wildlife agencies, vehicle OEMs, and map/GPS providers can adopt the system safely.
+## Implemented in version 0.2
 
----
+- Strict, versioned per-site and per-sensor configuration.
+- Independent site state, normalized ROIs, species/confidence filtering and repeated-observation confirmation.
+- Scoped sensor ingestion with timestamp, duplicate/replay, size and request-rate checks.
+- Freshness and weather-envelope faults, persistent manual hold, conservative traffic simulation.
+- Shared API/capture/dashboard service with an independent watchdog.
+- SQLite journal, watermarks, TTL advisories, HTTP cursors and optional TLS MQTT outbox.
+- Configured hotspot GeoJSON and explicitly uncalibrated local-time seasonal risk.
+- Trusted local YOLO adapter with hash/class checks; motion cannot establish wildlife presence.
+- No fabricated wildlife temperature or fever data.
+- Unit, API, failure, generated-video and actual-process tests; deterministic demo; evaluation tool.
+- Integration contracts, configuration/observation/event schemas, company/field guides, packaging and deployment examples.
 
-## Phase 0 — Foundations (2–4 weeks)
-- **Hotspot data model (GeoJSON)**: species, seasonality (breeding/migration windows), time-of-day risk, and advisory speeds.
-- **Risk API**: `/risk?lat&lon&time` returns 0–100 risk and advisory text.
-- **Hotspots API**: `/hotspots` serves agency-curated GeoJSON (no PII).
-- **Dashboard panel**: Hotspot list + current risk by time of day.
+## Required before a measured site pilot
 
-**Deliverables:** `data/hotspots.sample.geojson`, `src/hotspots.py`, new API routes, unit tests.
+- Collect and label representative licensed data; train and evaluate site/species models.
+- Acquire and calibrate devices, validate detection range, occlusion and frame age.
+- Validate native camera reconnection and vendor-specific radar/thermal interfaces.
+- Measure hardware load, latency, storage, reliability and behavior under power/network failures.
+- Establish baseline false-warning/miss rates and operating envelope with independent ground truth.
 
----
+## Required before public-road control or automotive deployment
 
-## Phase 1 — Public Alerts & Navigation (3–6 weeks)
-- **GPS/Maps feed**: JSON feed (v0) that nav apps can poll or subscribe to.
-- **Seasonal advisories**: dusk/dawn + breeding season notifications.
-- **Driver UI text** (short, non-distracting): “Wildlife corridor ahead; reduce speed.”
-- **Privacy-by-design**: no raw images, only anonymized alerts.
+- Responsible-authority engineering approval and complete safety case.
+- Vendor-specific controller integration with real feedback, hardware interlocks and all traffic movements.
+- Approved roadside-device behavior, human-factors evaluation and operation/maintenance ownership.
+- Any required licensed/standardized V2X encoding, radio security and vehicle integration.
+- Representative field evidence; outcome studies before collision-reduction claims.
 
-**Deliverables:** `src/gps_feed.py`, feed spec in `docs/vehicle_integration.md`.
+## Future company-scale development
 
----
+- Authenticated fleet provisioning, signed artifacts/configs, staged OTA and device inventory.
+- Distributed aggregation/availability design and audited enterprise identity integration.
+- Geographic corridor imports beyond configured circular sites.
+- Calibrated ecological prediction and astronomical time windows if supported by data.
+- Hardware quality/obstruction detection and regional model drift evaluation.
+- Long-term monitored deployments and independent security review.
 
-## Phase 2 — Vehicle Integration & V2X (6–12 weeks)
-- **V2X adapters** (prototype): map alerts to TIM-like messages; document mapping toward SAE J2735 family (non-normative).
-- **On-vehicle client stub**: UDP/MQTT listener example for cars/dashcams/ADAS ECUs.
-- **Advisory speed + lane-level hints** (advisory only).
-
-**Deliverables:** sample V2X payloads, listener script, integration notes in `docs/vehicle_integration.md`.
-
----
-
-## Phase 3 — Predictive Ecology & Scheduling (quarterly)
-- **Seasonal models**: combine historical collisions, migration calendars, weather, sunrise/sunset.
-- **Proactive signage schedules**: when/where to pre‑arm `ANIMAL_CROSSING` mode.
-- **Agency-only vaccination planning**: continue at metadata level (no field protocols).
-
-**Deliverables:** risk tuning docs, data connectors, evaluation reports.
-
----
-
-## Phase 4 — Multi-Site Operations & Safety Case (ongoing)
-- **Multi-corridor orchestration**; OTA configs; audit logs.
-- **Functional safety**: documented fail-safes, timers/hysteresis, test matrix.
-- **Security posture**: mTLS, SBOM, signed images, role-based access.
-
----
-
-## Data Governance & Ethics (continuous)
-- Keep images ephemeral; publish **event-only** data.
-- Mask/blur sensitive content; respect agency policies and legal requirements.
-- Vaccination remains **planning metadata only** (counts/dates). Field operations are out of scope here.
+These are explicit outstanding engineering tasks, not capabilities activated by configuration. No universal company compatibility, field certification or complete real-world validation is claimed.

@@ -1,27 +1,9 @@
-# Vehicle & Navigation Integration (Draft)
+# Vehicle and navigation integration
 
-This document summarizes how vehicles, ADAS, and navigation apps can consume wildlife corridor alerts.
+Version 0.2 exposes authenticated JSON advisories and configured hotspot GeoJSON. See [the full integration contract](company_integration.md) and [OpenAPI](../schemas/openapi.json).
 
-## Feeds
-- **Hotspots**: `GET /hotspots` — GeoJSON FeatureCollection (species, seasonality, notes).
-- **Point Risk**: `GET /risk?lat=<>&lon=<>[&iso=YYYY-MM-DDTHH:MM]` — returns `risk: 0..100`, `advisory` string.
-- **Events (optional)**: UDP/MQTT broadcast of `wildlife/events` (already in repo).
+Vehicles or navigation products can develop an advisory consumer using `examples/consume_events.py`. Preserve site identifiers, issuance/expiry, unknown-coverage status and event deduplication. Do not translate the simulated phase into a vehicle braking or traffic-lamp command.
 
-## JSON Example (Point Risk)
-```json
-{
-  "lat": 40.987,
-  "lon": -74.789,
-  "iso": "2025-09-07T18:30:00-04:00",
-  "risk": 72,
-  "factors": ["dusk","fall","recent_detections"],
-  "advisory": "Wildlife corridor at dusk (fall). Reduce speed and stay alert for deer."
-}
-```
+No standardized SAE J2735, ETSI ITS, C-V2X, DSRC, OEM CAN, ADAS braking, map-provider partnership or production automotive security stack is implemented. A company's authorized gateway must implement the protocol, security credentials, timing guarantees and certification obligations applicable to its product.
 
-## V2X (prototype mapping idea)
-- **TIM-like advisory** (non-normative): include corridor polygon, validity window, advisory text, version/timestamp.
-- **Security**: sign messages at the roadside unit; vehicles verify signature.
-- **Fallback**: If V2X unavailable, nav apps can use the HTTP feed.
-
-> This repo includes a simple UDP/MQTT publisher; OEMs can embed a listener in vehicles/dashcams to display an in-cabin warning.
+A numeric risk index is an uncalibrated heuristic, not a collision probability or a recommended automatic driving speed. Optional advisory speeds must come from the responsible site's engineering process.
